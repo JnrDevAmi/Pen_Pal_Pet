@@ -87,6 +87,14 @@ jobs:
             echo "no Windows installer in this run; skipping the zip"
           fi
 
+      # The release action UPDATES an existing release: old assets stay
+      # attached and the body is not always rewritten. Re-running a tag
+      # therefore piles files up. Delete first so every run starts clean.
+      - name: Remove any previous release for this tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release delete "$GITHUB_REF_NAME" --yes --repo "$GITHUB_REPOSITORY" || true
+
       - uses: softprops/action-gh-release@v2
         with:
           files: installers/*
