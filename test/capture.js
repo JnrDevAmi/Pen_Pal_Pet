@@ -28,7 +28,7 @@ const friends = [
   { keys: C.newKeys(), name: "Sam", pet: { name: "Waffle", species: "pup", color: "plum" }, verified: false },
 ];
 const peers = friends.map((f) => ({
-  id: C.deriveId(f.keys.sigPub), name: f.name, pet: f.pet, ip: "192.168.0.2",
+  id: C.deriveId(f.keys.sigPub), name: f.name, pet: f.pet,
   safety: C.safetyCode(store.identity.sigPub, f.keys.sigPub), verified: f.verified,
 }));
 

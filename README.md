@@ -3,10 +3,7 @@
 </p>
 
 <p align="center">
-  <img alt="tests" src="https://img.shields.io/badge/tests-140%20passing-2f8a57">
-  <img alt="dependencies" src="https://img.shields.io/badge/runtime%20dependencies-0-2b4ba0">
-  <img alt="network" src="https://img.shields.io/badge/internet%20access-none-d6423b">
-  <img alt="licence" src="https://img.shields.io/badge/licence-MIT-5b6275">
+  <b>No server · No accounts · No internet access · Windows, macOS and Linux</b>
 </p>
 
 # Pen-pal Pet
@@ -126,6 +123,12 @@ apart.
 - Some networks block the discovery messages between devices, usually guest
   Wi-Fi and larger corporate networks with "client isolation" switched on. On
   those, friends won't appear in the list.
+
+## Using this code
+
+No licence is granted. The source is here to read, and to build for yourself if
+you want to; it is not offered for redistribution or reuse. If you would like to
+do something with it, ask.
 
 ## For developers only
 

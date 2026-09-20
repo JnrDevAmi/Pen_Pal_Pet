@@ -33,7 +33,7 @@ const friendId = C.deriveId(friend.sigPub);
 const XSS = '<img src=x onerror="window.__pwned=1">';
 const peers = [{
   id: friendId, name: XSS, pet: { name: XSS, species: "frog", color: "moss" },
-  ip: "192.168.0.2", safety: C.safetyCode(store.identity.sigPub, friend.sigPub), verified: false,
+  safety: C.safetyCode(store.identity.sigPub, friend.sigPub), verified: false,
 }];
 const now = Date.now();
 const snapshot = {

@@ -637,8 +637,10 @@ class Net extends EventEmitter {
     const me = this.store.identity;
     return {
       me: { id: me.id, name: me.name, pet: me.pet, ready: me.ready, acceptAnyone: me.acceptAnyone },
+      // Deliberately no ip: the page never uses one, and an address the
+      // renderer cannot need is an address it should not be handed.
       peers: this.onlinePeers().map((p) => ({
-        id: p.id, name: p.name, pet: p.pet, ip: p.ip,
+        id: p.id, name: p.name, pet: p.pet,
         safety: p.safety, verified: this.store.isVerified(p.id),
       })),
       notes: this.store.list(),

@@ -202,6 +202,18 @@ test("a note returned to the page carries no key material", async () => {
   } finally { r.cleanup(); }
 });
 
+test("the snapshot carries no network addresses", () => {
+  const r = rig();
+  try {
+    // The page draws pets and names; it has no use for where anyone lives on
+    // the network, so none of that should cross the boundary into it.
+    const text = JSON.stringify(r.net.snapshot());
+    assert.ok(!/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(text),
+      "an IPv4 address reached the page: " + text.slice(0, 120));
+    assert.ok(!/"ip"\s*:/.test(text), "the snapshot still has an ip field");
+  } finally { r.cleanup(); }
+});
+
 test("the snapshot exposes safety codes but not the keys behind them", () => {
   const r = rig();
   try {

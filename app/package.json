@@ -5,7 +5,7 @@
   "description": "A desktop pet that carries tiny notes and doodles to your friends' desktops, over your Wi-Fi and nowhere else.",
   "main": "main.js",
   "author": "Pen-pal Pet",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "private": true,
   "scripts": {
     "start": "electron .",
