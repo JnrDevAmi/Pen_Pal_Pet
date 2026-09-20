@@ -91,7 +91,10 @@ jobs:
         with:
           files: installers/*
           draft: false
-          generate_release_notes: true
+          # Off: this appends GitHub's own commit list and a "Full Changelog"
+          # link. The notes below are for someone who wants to install the app,
+          # not read its history.
+          generate_release_notes: false
           body: |
             **Windows only.** Download the zip, unzip it, and run the setup
             wizard inside. Nothing else is needed - no Node, no npm.
