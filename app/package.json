@@ -1,0 +1,117 @@
+{
+  "name": "penpal-pet",
+  "productName": "Pen-pal Pet",
+  "version": "2.0.0",
+  "description": "A desktop pet that carries tiny notes and doodles to your friends' desktops, over your Wi-Fi and nowhere else.",
+  "main": "main.js",
+  "author": "Pen-pal Pet",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --publish never",
+    "dist:win": "electron-builder --win --publish never",
+    "dist:mac": "electron-builder --mac --publish never",
+    "dist:linux": "electron-builder --linux --publish never",
+    "test": "node ../test/run-all.js",
+    "test:stress": "node ../test/04-stress.js",
+    "dist:portable": "electron-builder --win portable --publish never",
+    "test:renderer": "electron ../test/09-renderer.js",
+    "test:multiproc": "node ../test/05-multiproc.js 30",
+    "peer:a": "electron . --user-data-dir=.peers/a",
+    "peer:b": "electron . --user-data-dir=.peers/b",
+    "test:packaged": "node ../test/10-packaged.js"
+  },
+  "devDependencies": {
+    "electron": "^44.4.3",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.penpalpet.app",
+    "productName": "Pen-pal Pet",
+    "files": [
+      "main.js",
+      "preload.js",
+      "store.js",
+      "net.js",
+      "actions.js",
+      "crypto.js",
+      "renderer/**",
+      "build/tray*.png",
+      "build/icon.png"
+    ],
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "signExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "license": "build/license.txt",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "menuCategory": false,
+      "shortcutName": "Pen-pal Pet",
+      "uninstallDisplayName": "Pen-pal Pet",
+      "artifactName": "Pen-pal-Pet-Setup-${version}.${ext}",
+      "differentialPackage": false
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "category": "public.app-category.social-networking",
+      "extendInfo": {
+        "LSUIElement": true
+      },
+      "artifactName": "Pen-pal-Pet-${version}.${ext}"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "icon": "build/icon.png",
+      "category": "Utility",
+      "artifactName": "Pen-pal-Pet-${version}.${ext}"
+    },
+    "compression": "maximum",
+    "removePackageScripts": true,
+    "removePackageKeywords": true,
+    "electronLanguages": [
+      "en-US"
+    ],
+    "asar": true,
+    "portable": {
+      "artifactName": "Pen-pal-Pet-${version}-portable.${ext}",
+      "unicode": false
+    },
+    "afterPack": "build/afterPack.js"
+  }
+}

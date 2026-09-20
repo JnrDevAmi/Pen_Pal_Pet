@@ -1,0 +1,29 @@
+# dependencies and build output
+node_modules/
+dist/
+out/
+
+# local test identities created by `npm run peer:a` / `peer:b`
+.peers/
+
+# the app's own data, if anyone ever runs it from inside the tree
+identity.json
+notes.json
+*.tmp
+
+# screenshots and scratch captures
+screenshots/
+*.local.*
+
+# editor and OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+
+# logs
+*.log
+npm-debug.log*

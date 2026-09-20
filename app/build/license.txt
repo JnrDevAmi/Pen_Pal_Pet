@@ -1,0 +1,90 @@
+PEN-PAL PET - TERMS OF USE
+
+Please read this before installing.
+
+
+WHAT THIS PROGRAM DOES
+
+Pen-pal Pet carries short notes and doodles between computers on the same
+local network. A small pet walks them from your window to a friend's, and
+walks back with their reply.
+
+
+WHAT IT DOES NOT DO
+
+  *  It does not connect to the internet. Not for updates, not for fonts,
+     not for analytics. There is no server anywhere in this product.
+
+  *  It does not collect, transmit or sell any information about you.
+     There is no account, no sign-up and no telemetry.
+
+  *  It does not run in the background after you quit it. Closing the
+     window leaves it in the notification area so notes can still arrive;
+     quitting from that menu stops it completely.
+
+
+WHAT IT STORES, AND WHERE
+
+Two files in this program's own folder under your user profile:
+
+     identity.json    your name, your pet, and this computer's keys
+     notes.json       the notes you have sent and received
+
+Both are sealed using the encryption service built into Windows, so copying
+them to another computer yields nothing readable.
+
+
+NETWORK PERMISSION
+
+The first time it runs, Windows will ask whether to allow Pen-pal Pet
+through the firewall. Choose PRIVATE NETWORKS ONLY. The program listens for
+friends only on networks your computer is already attached to, and refuses
+connections from anywhere else. Without this permission, notes cannot be
+handed over.
+
+
+WHAT IT CANNOT PROMISE
+
+Notes are encrypted between the two computers and every message is signed,
+so a note cannot be read or altered by somebody else on the same Wi-Fi.
+However, display names are not unique: anyone may call themselves by any
+name. The four-word safety code shown beside each friend is what tells a
+real friend from somebody imitating one. Compare it with them once.
+
+This program is intended for a home or a team room. It is not intended for
+a hostile network, and it is not a secure messenger for information whose
+disclosure would cause you harm.
+
+
+THIS SOFTWARE IS NOT CODE-SIGNED
+
+Windows may show a blue "Windows protected your PC" notice because this
+program carries no paid code-signing certificate. That notice means the
+publisher is unverified, not that the program is harmful. Choose "More
+info", then "Run anyway" if you are satisfied with where you obtained it.
+
+
+LICENCE
+
+MIT Licence.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+
+By choosing "I Agree" you confirm that you have read the above.

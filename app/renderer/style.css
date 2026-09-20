@@ -1,0 +1,476 @@
+:root {
+  --paper: #fffdf6;
+  --card: #ffffff;
+  --paper-edge: #e4dcc6;
+  --ink: #1f2433;
+  --ink-soft: #5b6275;
+  --red: #d6423b;
+  --blue: #2b4ba0;
+  --stamp: #f2c14e;
+  --sky-top: #b7d3f0;
+  --sky-bot: #e8f1fa;
+  --shadow: 0 18px 44px rgba(24, 32, 58, .28), 0 3px 8px rgba(24, 32, 58, .14);
+  --focus: #2b4ba0;
+  --desk: #1b2545;
+  --desk-2: #161f3b;
+  --dot: rgba(255, 255, 255, .07);
+  --bar: #121a30;
+  --bar-ink: #e7ecf8;
+  --bar-dim: #93a0c0;
+  --rail-hover: rgba(255, 255, 255, .08);
+  --rail-active: rgba(255, 255, 255, .14);
+  --rail-w: 96px;
+  --bar-h: 38px;
+  --stripe-w: 10px;
+  --hand: "Patrick Hand", "Segoe Print", "Comic Sans MS", "Chalkboard SE", cursive;
+  --ui: "Fredoka", "Segoe UI", "SF Pro Text", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #f1ebda;
+    --card: #fbf7ec;
+    --paper-edge: #d4c9ad;
+    --sky-top: #1c2947;
+    --sky-bot: #33466f;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; height: 100%; overflow: hidden;
+  background: var(--desk);
+  user-select: none;
+}
+body { font-family: var(--ui); color: var(--ink); -webkit-font-smoothing: antialiased; }
+button { font: inherit; }
+input, textarea { user-select: text; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+/* ---------- pets ---------- */
+.pets { position: absolute; inset: 0; pointer-events: none; z-index: 20; }
+.pet {
+  position: absolute; left: 0; bottom: -2px;
+  width: 90px; height: 64px;
+  pointer-events: auto; will-change: transform;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .22));
+}
+.pet.appear { animation: appear .6s ease-out; }
+@keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+.pet-btn {
+  display: block; width: 90px; height: 64px; padding: 0; margin: 0;
+  background: none; border: 0; border-radius: 14px; cursor: pointer;
+}
+.pet-svg { display: block; width: 90px; height: 64px; overflow: visible; }
+.pet.flip .pet-svg { transform: scaleX(-1); }
+.pet.hop .pet-btn { animation: hop .45s ease-out; }
+@keyframes hop { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-16px); } }
+
+.pet-svg .leg, .pet-svg .body-g, .pet-svg .tail { transform-box: fill-box; }
+
+/* Legs pivot at the hip; the shin pivots at the knee. */
+.pet-svg .leg { transform-origin: 50% 0%; }
+.pet-svg .shin { transform-box: fill-box; transform-origin: 50% 0%; }
+/* The far pair sits back in tone so four legs read as four, not two. */
+.pet-svg .leg.far { filter: brightness(.82); }
+
+/*
+ * The walk: one stride is --gait, and each foot lands a quarter of that after
+ * the one before it, in the lateral sequence a real quadruped uses -
+ * front-right, rear-left, front-left, rear-right. Negative delays start each
+ * leg already part-way through, so the cycle is correct from the first frame.
+ */
+.pet-svg { --gait: .36s; }
+.pet.walking .leg.fr { animation: stride var(--gait) linear infinite; }
+.pet.walking .leg.rl { animation: stride var(--gait) linear calc(var(--gait) * -0.25) infinite; }
+.pet.walking .leg.fl { animation: stride var(--gait) linear calc(var(--gait) * -0.5) infinite; }
+.pet.walking .leg.rr { animation: stride var(--gait) linear calc(var(--gait) * -0.75) infinite; }
+
+/* The knee folds as the foot leaves the ground and straightens to reach for
+   the next plant. Same phase as its own leg, one cycle behind nothing. */
+.pet.walking .leg.fr .shin { animation: knee var(--gait) linear infinite; }
+.pet.walking .leg.rl .shin { animation: knee var(--gait) linear calc(var(--gait) * -0.25) infinite; }
+.pet.walking .leg.fl .shin { animation: knee var(--gait) linear calc(var(--gait) * -0.5) infinite; }
+.pet.walking .leg.rr .shin { animation: knee var(--gait) linear calc(var(--gait) * -0.75) infinite; }
+
+/* Frog and bird keep the older two-phase rig: one hops, one is a biped. */
+.pet.walking .leg.a { animation: step .34s ease-in-out infinite; }
+.pet.walking .leg.b { animation: step .34s ease-in-out -.17s infinite; }
+
+/* The body rises and falls twice per stride, once for each diagonal support. */
+.pet.walking .body-g { animation: bodywalk calc(var(--gait) / 2) ease-in-out infinite; }
+.pet.walking.sp-frog .body-g { animation: frogbob .5s ease-in-out infinite; }
+.pet.walking .tail { transform-origin: 100% 100%; animation: walkwag calc(var(--gait) * 2) ease-in-out infinite; }
+.pet:not(.walking) .tail { transform-origin: 100% 100%; animation: wag 1.8s ease-in-out infinite; }
+.pet.sleep .body-g { animation: breathe 2.6s ease-in-out infinite; }
+
+/*
+ * Stance takes about two thirds of the cycle: the foot is planted and travels
+ * backward under the body. Then it lifts, swings forward through the air, and
+ * plants again. Holding the foot down for most of the cycle is what stops it
+ * looking like paddling.
+ */
+@keyframes stride {
+  0%   { transform: rotate(27deg)  translateY(0); }
+  32%  { transform: rotate(6deg)   translateY(0); }
+  66%  { transform: rotate(-23deg) translateY(0); }
+  74%  { transform: rotate(-17deg) translateY(-4px); }
+  86%  { transform: rotate(8deg)   translateY(-5px); }
+  95%  { transform: rotate(23deg)  translateY(-1.5px); }
+  100% { transform: rotate(27deg)  translateY(0); }
+}
+/* Straight through the stance, folded through the swing. A leg that stays
+   rigid the whole way round is what makes a walk look like a toy. */
+@keyframes knee {
+  0%   { transform: rotate(-6deg); }
+  40%  { transform: rotate(0deg); }
+  66%  { transform: rotate(6deg); }
+  74%  { transform: rotate(30deg); }
+  86%  { transform: rotate(22deg); }
+  96%  { transform: rotate(-2deg); }
+  100% { transform: rotate(-6deg); }
+}
+@keyframes step { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes bodywalk { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
+@keyframes walkwag { 0%,100% { transform: rotate(-7deg); } 50% { transform: rotate(8deg); } }
+@keyframes frogbob { 0%,100% { transform: translateY(0); } 45% { transform: translateY(-6px); } }
+@keyframes wag { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-10deg); } }
+@keyframes breathe { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(.96); } }
+
+.carry { display: none; }
+.pet.carrying .carry { display: inline; }
+.carry .env { fill: #fffdf6; }
+.pet.carrying-reply .carry .env { fill: #f9dc8a; }
+
+.above {
+  position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  margin-bottom: 2px; pointer-events: none;
+}
+.tag, .bubble {
+  white-space: nowrap; color: var(--ink); background: var(--paper);
+  border: 1px solid var(--paper-edge); box-shadow: 0 2px 5px rgba(0,0,0,.14);
+}
+.tag { font-size: 12px; padding: 1px 8px; border-radius: 999px; }
+.bubble { font-family: var(--hand); font-size: 18px; line-height: 1.1; padding: 3px 10px; border-radius: 12px; }
+.tag[hidden], .bubble[hidden] { display: none; }
+
+.floor-mail {
+  position: fixed; bottom: 0; z-index: 18;
+  width: 46px; height: 34px; padding: 0; border: 0; background: none; cursor: pointer;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,.2));
+}
+.floor-mail[hidden] { display: none; }
+.floor-mail svg { width: 46px; height: 34px; overflow: visible; }
+.floor-mail .count {
+  position: absolute; top: -8px; right: -6px; min-width: 18px; height: 18px; border-radius: 9px;
+  background: var(--blue); color: #fff; font-size: 11px; font-weight: 600;
+  display: grid; place-items: center; padding: 0 4px;
+}
+
+/* ---------- pet menu ---------- */
+.popover {
+  position: fixed; bottom: 84px; z-index: 45; width: 190px;
+  background: var(--paper); color: var(--ink); border-radius: 8px; box-shadow: var(--shadow);
+  padding: 6px; display: grid; gap: 2px; animation: appear .15s ease-out;
+}
+.popover .who { font-size: 13px; color: var(--ink-soft); padding: 4px 8px 2px; }
+.popover button {
+  text-align: left; border: 0; background: none; color: var(--ink);
+  padding: 7px 8px; border-radius: 6px; cursor: pointer; font-size: 15px;
+}
+.popover button:hover, .popover button:focus-visible { background: rgba(43,75,160,.1); outline: none; }
+
+/* ---------- windows ---------- */
+.win {
+  position: fixed; z-index: 50; left: 50%; top: 46%;
+  transform: translate(-50%, -50%);
+  width: min(460px, calc(100vw - 24px));
+  max-height: calc(100vh - 40px);
+  display: flex; flex-direction: column;
+  background: var(--paper); color: var(--ink);
+  border-radius: 6px; box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: appear .18s ease-out;
+}
+.win.wide { width: min(560px, calc(100vw - 24px)); }
+.win-stripe {
+  height: 10px; flex: none;
+  background: repeating-linear-gradient(-45deg,
+    var(--red) 0 12px, var(--paper) 12px 18px, var(--blue) 18px 30px, var(--paper) 30px 36px);
+}
+.win-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 12px 12px 4px 18px; cursor: grab; flex: none;
+}
+.win-head:active { cursor: grabbing; }
+.win-head h2 { margin: 0; font-size: 21px; font-weight: 600; line-height: 1.2; }
+.close {
+  width: 34px; height: 34px; border-radius: 8px; border: 0; background: none; cursor: pointer;
+  color: var(--ink); font-size: 22px; line-height: 1; flex: none;
+}
+.close:hover { background: rgba(31,36,51,.08); }
+.close[hidden] { display: none; }
+.win-body { padding: 6px 18px 18px; overflow: auto; }
+.win-body p { margin: 0 0 12px; line-height: 1.5; max-width: 62ch; }
+.muted { color: var(--ink-soft); }
+.small { font-size: 13px; line-height: 1.45; }
+.error { color: var(--red); font-size: 14px; min-height: 1.2em; margin: 6px 0 0; }
+.stack { display: grid; gap: 12px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; align-items: center; margin-top: 14px; }
+.actions.left { justify-content: flex-start; }
+.actions .grow { flex: 1; }
+
+.btn {
+  border-radius: 9px; padding: 8px 15px; cursor: pointer; font-weight: 500;
+  border: 2px solid var(--ink); background: transparent; color: var(--ink);
+}
+.btn:hover { background: rgba(31,36,51,.06); }
+.btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+.btn.primary:hover { background: #233f8a; }
+.btn.small { padding: 4px 10px; font-size: 13px; border-width: 1.5px; border-radius: 7px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.linkish { background: none; border: 0; padding: 0; color: var(--blue); text-decoration: underline; cursor: pointer; font-size: inherit; }
+
+label.field { display: grid; gap: 5px; font-weight: 500; }
+input[type="text"], input[type="email"], input[type="url"], textarea {
+  width: 100%; font: inherit; color: var(--ink);
+  background: var(--card); border: 1.5px solid var(--paper-edge); border-radius: 8px;
+  padding: 8px 10px;
+}
+textarea { font-family: var(--hand); font-size: 20px; line-height: 1.3; resize: vertical; min-height: 70px; }
+input:focus, textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(43,75,160,.18); }
+.counter { font-size: 12px; color: var(--ink-soft); text-align: right; margin-top: -8px; }
+
+/* friend code */
+.code { font-size: 28px; font-weight: 600; letter-spacing: .06em; font-variant-numeric: tabular-nums; user-select: text; }
+.section { font-weight: 600; margin: 18px 0 8px; font-size: 16px; }
+
+/* picker */
+.picker-list {
+  margin-top: 6px; border: 1.5px solid var(--paper-edge); border-radius: 8px; background: var(--card);
+  max-height: 168px; overflow: auto;
+}
+.result {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+  padding: 6px 10px; border: 0; background: none; cursor: pointer; color: var(--ink);
+}
+.result:hover, .result:focus-visible { background: rgba(43,75,160,.08); outline: none; }
+.result[aria-pressed="true"] { background: rgba(43,75,160,.14); }
+.result .note { color: var(--ink-soft); font-size: 13px; margin-left: auto; }
+.picker-list .empty { padding: 10px; color: var(--ink-soft); font-size: 14px; }
+.face { width: 38px; height: 27px; flex: none; }
+.face svg { width: 38px; height: 27px; }
+
+/* doodle pad */
+.pad {
+  width: min(100%, max(260px, calc((100vh - 430px) * 1.6)));
+  justify-self: center;
+  position: relative; background: var(--card); border-radius: 8px;
+  border: 1.5px dashed var(--paper-edge); overflow: hidden;
+  background-image: linear-gradient(transparent 31px, rgba(43,75,160,.08) 32px);
+  background-size: 100% 32px;
+}
+.pad canvas { display: block; width: 100%; aspect-ratio: 320 / 200; cursor: crosshair; touch-action: none; }
+.pad .hint {
+  position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none;
+  font-family: var(--hand); font-size: 20px; color: var(--ink-soft); opacity: .7;
+}
+.pad .hint[hidden] { display: none; }
+.pad-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: -4px; }
+.swatch {
+  width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+  border: 2px solid var(--paper); box-shadow: 0 0 0 1px var(--paper-edge);
+}
+.swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--ink); }
+.pad-tools .spacer { flex: 1; }
+
+/* postcard */
+.postcard {
+  position: relative; background: var(--card); border: 1px solid var(--paper-edge);
+  border-radius: 4px; padding: 16px 16px 14px; box-shadow: 0 2px 0 var(--paper-edge);
+}
+.postcard .doodle { display: block; width: 100%; max-width: min(360px, calc(100% - 66px)); aspect-ratio: 320 / 200; margin: 0 0 6px; }
+.postcard .hand { font-family: var(--hand); font-size: 23px; line-height: 1.3; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0 64px 8px 0; user-select: text; }
+.postcard .hand:empty { display: none; }
+.postcard .sig { font-family: var(--hand); font-size: 18px; color: var(--ink-soft); margin-right: 64px; }
+.postcard .wave { font-family: var(--hand); font-size: 30px; margin: 4px 64px 8px 0; }
+.postcard.small { padding: 10px 12px; }
+.postcard.small .hand, .postcard.small .sig { font-size: 18px; margin-right: 0; }
+.postcard.small .doodle { max-width: 200px; }
+.stamp {
+  position: absolute; top: 12px; right: 12px; width: 52px; height: 60px;
+  background: #fffdf6; padding: 5px; border: 1px dashed #b9ad8f; transform: rotate(4deg);
+  display: grid; place-items: center;
+}
+.stamp .inner { width: 100%; height: 100%; display: grid; place-items: center; background: #dbe8f6; }
+.stamp svg { width: 38px; height: 28px; }
+.label { font-weight: 500; margin: 14px 0 6px; }
+
+/* pet editor */
+.preview {
+  display: grid; place-items: center; height: 116px; border-radius: 8px;
+  background: linear-gradient(180deg, var(--sky-top), var(--sky-bot));
+}
+.preview svg { width: 170px; height: 121px; }
+.choices { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.choice {
+  display: grid; justify-items: center; gap: 2px; padding: 8px 4px; cursor: pointer;
+  border-radius: 9px; border: 1.5px solid var(--paper-edge); background: var(--card); color: var(--ink);
+}
+.choice svg { width: 54px; height: 38px; }
+.choice[aria-pressed="true"] { border-color: var(--blue); box-shadow: 0 0 0 2px var(--blue); }
+.colors { display: flex; gap: 10px; flex-wrap: wrap; }
+.colors .swatch { width: 32px; height: 32px; }
+
+/* lists */
+.rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.row {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: 8px; background: var(--card); border: 1px solid var(--paper-edge);
+}
+.row.hot { border-color: var(--blue); box-shadow: inset 4px 0 0 var(--blue); }
+.row-title { font-weight: 500; }
+.row-sub { font-size: 13px; color: var(--ink-soft); }
+.row-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* toasts */
+.toasts {
+  position: fixed; right: 18px; bottom: 96px; z-index: 70;
+  display: grid; gap: 8px; justify-items: end; pointer-events: none; width: min(360px, calc(100vw - 36px));
+}
+.toast {
+  background: var(--paper); color: var(--ink); border-radius: 6px; padding: 9px 14px;
+  box-shadow: var(--shadow); font-size: 15px; line-height: 1.35;
+  border-left: 5px solid var(--blue); animation: appear .2s ease-out;
+}
+.toast.warn { border-left-color: var(--red); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pet.walking .leg, .pet.walking .body-g, .pet.walking .tail,
+  .pet:not(.walking) .tail, .pet.sleep .body-g, .pet.hop .pet-btn,
+  .win, .toast, .pet.appear, .popover { animation: none !important; }
+}
+
+/* ---- safety codes ---- */
+.safety {
+  margin-top: 3px;
+  font-size: 11px;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+.safety-label { color: #8a8377; }
+.safety-code {
+  font-family: "Patrick Hand", ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: .2px;
+  color: #5a5348;
+  background: #f2ecdd;
+  border-radius: 4px;
+  padding: 0 5px;
+}
+.safety.ok .safety-code { background: #e3f0e3; color: #2f6b3f; }
+.verified-tick { color: #2f8a57; font-weight: 600; }
+.safety-big {
+  text-align: center;
+  margin: 14px 0;
+}
+.safety-big code {
+  font-family: "Patrick Hand", ui-monospace, monospace;
+  font-size: 22px;
+  letter-spacing: .5px;
+  color: #1f2433;
+  background: #f5efe0;
+  border: 1.5px dashed #c9bfa8;
+  border-radius: 8px;
+  padding: 10px 16px;
+  display: inline-block;
+}
+.warn-text { color: #b3352e; font-weight: 500; }
+
+/* ================= app shell ================= */
+/* The window is an ordinary opaque one now: an airmail edge, a rail of
+   shortcuts, a dotted "desk" the pets walk on, and a status bar. */
+
+.stripe {
+  position: fixed; left: 0; top: 0; bottom: 0; width: var(--stripe-w);
+  z-index: 60; pointer-events: none;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--red) 0 9px,
+    #fffdf6 9px 18px,
+    var(--blue) 18px 27px,
+    #fffdf6 27px 36px
+  );
+}
+
+.rail {
+  position: fixed; left: var(--stripe-w); top: 0; bottom: var(--bar-h);
+  width: var(--rail-w); z-index: 40;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 4px; padding: 14px 6px;
+  overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: thin;
+}
+.rail-btn {
+  width: 84px; padding: 8px 4px 7px;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  background: none; border: 0; border-radius: 10px;
+  color: var(--bar-ink); cursor: pointer;
+  font-size: 11.5px; line-height: 1.15; text-align: center;
+  transition: background .12s ease;
+}
+.rail-btn:hover { background: var(--rail-hover); }
+.rail-btn:active { background: var(--rail-active); }
+.rail-ico {
+  position: relative; width: 42px; height: 42px;
+  display: grid; place-items: center;
+}
+.rail-ico svg { width: 38px; height: 38px; overflow: visible; }
+.rail-label {
+  max-width: 78px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .45);
+}
+.rail-badge {
+  position: absolute; top: -3px; right: -4px; min-width: 18px; height: 18px;
+  padding: 0 5px; border-radius: 9px;
+  background: var(--red); color: #fff;
+  font-size: 11px; font-weight: 600; line-height: 18px; text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+}
+
+.stage {
+  position: fixed;
+  left: calc(var(--stripe-w) + var(--rail-w)); right: 0;
+  top: 0; bottom: var(--bar-h);
+  overflow: hidden;
+  background:
+    radial-gradient(var(--dot) 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(180deg, var(--desk) 0%, var(--desk-2) 100%);
+}
+
+.statusbar {
+  position: fixed; left: 0; right: 0; bottom: 0; height: var(--bar-h);
+  z-index: 55;
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 14px 0 calc(var(--stripe-w) + 12px);
+  background: var(--bar);
+  border-top: 1px solid rgba(255, 255, 255, .07);
+  color: var(--bar-ink); font-size: 12.5px;
+}
+.sb-pet { width: 30px; height: 22px; flex: 0 0 auto; display: block; }
+.sb-pet svg { width: 30px; height: 22px; overflow: visible; }
+.sb-text { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sb-clock { flex: 0 0 auto; color: var(--bar-dim); font-variant-numeric: tabular-nums; }
+
+/* The floor mail and pets sit on the stage floor, above the status bar. */
+.floor-mail { position: absolute; bottom: 0; }
+.popover { bottom: 58px; }
+.toasts { bottom: calc(var(--bar-h) + 14px); }
+
+/* Paper windows stay cream, and now float over a dark desk. */
+.rail-badge.quiet {
+  background: #4a5f92;
+  color: #e7ecf8;
+  font-weight: 500;
+}
