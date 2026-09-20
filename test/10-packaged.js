@@ -78,7 +78,7 @@ function killApp(dir) {
     process.exit(0);
   }
   if (!fs.existsSync(exe)) {
-    console.log(`  no built app at ${exe}\n  build one first: npm run dist:portable`);
+    console.log(`  no built app at ${exe}\n  build one first: npm run dist`);
     process.exit(1);
   }
   // PowerShell -like matches literally, so the prefix must be in Windows form.
