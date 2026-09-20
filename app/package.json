@@ -11,8 +11,6 @@
     "start": "electron .",
     "dist": "electron-builder --publish never",
     "dist:win": "electron-builder --win --publish never",
-    "dist:mac": "electron-builder --mac --publish never",
-    "dist:linux": "electron-builder --linux --publish never",
     "test": "node ../test/run-all.js",
     "test:stress": "node ../test/04-stress.js",
     "dist:portable": "electron-builder --win portable --publish never",
@@ -76,30 +74,6 @@
       "uninstallDisplayName": "Pen-pal Pet",
       "artifactName": "Pen-pal-Pet-Setup-${version}.${ext}",
       "differentialPackage": false
-    },
-    "mac": {
-      "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "universal"
-          ]
-        }
-      ],
-      "icon": "build/icon.png",
-      "category": "public.app-category.social-networking",
-      "extendInfo": {
-        "LSUIElement": true
-      },
-      "artifactName": "Pen-pal-Pet-${version}.${ext}"
-    },
-    "linux": {
-      "target": [
-        "AppImage"
-      ],
-      "icon": "build/icon.png",
-      "category": "Utility",
-      "artifactName": "Pen-pal-Pet-${version}.${ext}"
     },
     "compression": "maximum",
     "removePackageScripts": true,

@@ -7,9 +7,6 @@ const { Store } = require("./store");
 const { Net } = require("./net");
 const { makeActions, dispatch } = require("./actions");
 
-if (process.platform === "linux") {
-  app.commandLine.appendSwitch("enable-transparent-visuals");
-}
 if (!app.requestSingleInstanceLock()) {
   app.quit();
   process.exit(0);
@@ -190,7 +187,6 @@ app.on("web-contents-created", (_e, contents) => {
 });
 
 app.whenReady().then(() => {
-  if (process.platform === "darwin" && app.dock) app.dock.hide();
   app.setAppUserModelId("com.penpalpet.app");
   lockDownSession(session.defaultSession);
 

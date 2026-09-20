@@ -1,14 +1,15 @@
 name: Build installers
 
-# Builds Pen-pal Pet for Windows, macOS and Linux.
+# Builds the Windows installer for Pen-pal Pet.
 #
-#   Tag a version  ->  a public Release appears with the installers attached,
+#   Tag a version  ->  a public Release appears with the installer attached,
 #                      which is the link you give people.
-#   Run by hand    ->  the installers land in the run's Artifacts, which is
-#                      fine for checking a build but no good for users: those
-#                      need a GitHub login and expire after 90 days.
+#   Run by hand    ->  it lands in the run's Artifacts, fine for checking a
+#                      build but no good for users: those need a GitHub login
+#                      and expire after 90 days.
 #
-# The macOS build has to happen here, because a .dmg can only be made on a Mac.
+# Windows only, deliberately. The app has never been built or run on macOS or
+# Linux, so shipping either would be claiming something nobody has checked.
 
 on:
   workflow_dispatch:
@@ -17,20 +18,7 @@ on:
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            target: --win
-            name: windows
-          - os: macos-latest
-            target: --mac
-            name: macos
-          - os: ubuntu-latest
-            target: --linux
-            name: linux
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -55,24 +43,19 @@ jobs:
 
       - name: Build
         working-directory: app
-        run: npx electron-builder ${{ matrix.target }} --publish never
+        run: npx electron-builder --win --publish never
 
       - uses: actions/upload-artifact@v4
         with:
-          name: penpal-pet-${{ matrix.name }}
-          path: |
-            app/dist/*.exe
-            app/dist/*.dmg
-            app/dist/*.AppImage
+          name: penpal-pet-windows
+          path: app/dist/*.exe
           if-no-files-found: error
 
   # Only on a tag: gather what the three runners built and publish it as a
   # Release, so the installers have permanent public download links.
   release:
     needs: build
-    # always(): macOS and Linux builds are not yet proven, and one of them
-    # failing must not stop a working Windows installer from being published.
-    if: always() && startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -110,20 +93,20 @@ jobs:
           draft: false
           generate_release_notes: true
           body: |
-            Download the zip for your computer, unzip it, and run the setup
+            **Windows only.** Download the zip, unzip it, and run the setup
             wizard inside. Nothing else is needed - no Node, no npm.
 
-            | Computer | File | What to do |
-            | --- | --- | --- |
-            | Windows | `Pen-pal-Pet-Setup-*.exe` | Double-click and follow the wizard. No administrator password needed. |
-            | Windows (portable) | `Pen-pal-Pet-*-portable.exe` | Runs straight from the file. Nothing is installed. |
-            | macOS | `Pen-pal-Pet-*.dmg` | Open it and drag the app to Applications. |
-            | Linux | `Pen-pal-Pet-*.AppImage` | `chmod +x` it, then run it. |
+            | File | What to do |
+            | --- | --- |
+            | `Pen-pal-Pet-*-Windows.zip` | Unzip and run the setup wizard. No administrator password needed. |
+            | `Pen-pal-Pet-*-portable.exe` | Runs straight from the file. Nothing is installed. |
 
-            These are not code-signed, so Windows shows a blue "Windows protected
-            your PC" notice and macOS asks you to right-click and choose Open the
-            first time. That means the publisher is unverified, not that anything
-            is wrong with the file.
+            It is not code-signed, so Windows shows a blue "Windows protected
+            your PC" notice. Click More info, then Run anyway. That means the
+            publisher is unverified, not that anything is wrong with the file.
+
+            There is no macOS or Linux build. The app has never been run on
+            either, so nothing is offered for them yet.
 
             On first run your computer asks whether to allow Pen-pal Pet through
             the firewall. Say yes, and tick **Private networks only**.

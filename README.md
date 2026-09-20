@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <b>No server · No accounts · No internet access · Windows, macOS and Linux</b>
+  <b>No server · No accounts · No internet access</b>
 </p>
 
 # Pen-pal Pet
@@ -21,6 +21,9 @@ on two computers on the same network and you can send notes.
 
 ### ➜ **[Download for Windows](https://github.com/JnrDevAmi/Pen_Pal_Pet/releases/latest)**
 
+**Windows only.** There is no macOS or Linux build: the app has never been run
+on either, and shipping one would be claiming something nobody has checked.
+
 1. Download the zip and **unzip it**
 2. Double-click **`Pen-pal-Pet-Setup-2.0.0.exe`**
 3. Windows shows a blue *"Windows protected your PC"* box — click **More info**,
@@ -35,13 +38,8 @@ Pen-pal Pet through the firewall: **say yes, and tick Private networks only.**
 Without it the two computers can't hand notes to each other. Never tick Public —
 the app has no business listening on a café or airport network.
 
-**Other computers**
-
-| Computer | File | What to do |
-| --- | --- | --- |
-| Windows (portable) | `Pen-pal-Pet-2.0.0-portable.exe` | Nothing installed — runs from the file, works from a USB stick. |
-| macOS | `Pen-pal-Pet-2.0.0.dmg` | Open it, drag the app to Applications. First time, right-click → **Open** → **Open**, because it isn't signed by Apple. |
-| Linux | `Pen-pal-Pet-2.0.0.AppImage` | `chmod +x` it, then run it. |
+**Prefer not to install anything?** `Pen-pal-Pet-2.0.0-portable.exe` runs
+straight from the file and works from a USB stick. Nothing is installed.
 
 To remove it: **Settings → Apps → Installed apps → Pen-pal Pet → Uninstall**.
 Your notes are kept in case you reinstall; delete `%APPDATA%\Pen-pal Pet` to
@@ -104,7 +102,7 @@ again fresh.
 - The app only accepts connections from computers on your own networks, and the
   listener caps connections and times out anything that dawdles.
 - **Your keys are sealed on disk** with your operating system's own keystore
-  (DPAPI on Windows, Keychain on macOS, libsecret on Linux), so copying
+  (DPAPI on Windows), so copying
   `identity.json` to another computer yields nothing usable.
 - Everything is kept in two small files in the app's own folder: `identity.json`
   and `notes.json`.
@@ -144,12 +142,15 @@ cd app
 npm install
 npm start               # run it from source
 
-npm run dist:portable   # Windows: single portable .exe, nothing to install
-npm run dist            # installers for the computer you're on
+npm run dist:portable   # single portable .exe, nothing to install
+npm run dist            # the setup wizard
 ```
 
-Each installer has to be built on its own kind of computer, except that Windows
-builds also work from Linux if Wine is installed.
+The Windows installer is built by `electron-builder`. macOS and Linux targets
+were removed rather than left in untested: the app still carries a tray icon
+and a keystore path for both, so they are plausible, but nobody has built or
+run them. Adding them back means building on those machines and actually
+checking the window appears, the tray behaves, and the keystore works.
 
 ### Publishing a version
 
