@@ -87,35 +87,18 @@ jobs:
             echo "no Windows installer in this run; skipping the zip"
           fi
 
-      # The release action UPDATES an existing release: old assets stay
-      # attached and the body is not always rewritten. Re-running a tag
-      # therefore piles files up. Delete first so every run starts clean.
-      - name: Remove any previous release for this tag
+      # Published with GitHub's own CLI rather than a third-party action:
+      # one less dependency in the chain, and it fails loudly.
+      #
+      # The release is deleted and recreated every run, so re-tagging never
+      # leaves stale assets attached - which is how a macOS build from six
+      # hours earlier survived several rebuilds.
+      - name: Publish the release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release delete "$GITHUB_REF_NAME" --yes --repo "$GITHUB_REPOSITORY" || true
-
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: installers/*
-          draft: false
-          # Off: this appends GitHub's own commit list and a "Full Changelog"
-          # link. The notes below are for someone who wants to install the app,
-          # not read its history.
-          generate_release_notes: false
-          body: |
-            **Windows only.** Download the zip, unzip it, and run the setup
-            wizard inside. Nothing else is needed - no Node, no npm.
-
-            Download `Pen-pal-Pet-*-Windows.zip`, unzip it, and run the setup
-            wizard. No administrator password needed.
-
-            It is not code-signed, so Windows shows a blue "Windows protected
-            your PC" notice. Click More info, then Run anyway. That means the
-            publisher is unverified, not that anything is wrong with the file.
-
-            There is no macOS or Linux build. The app has never been run on
-            either, so nothing is offered for them yet.
-
-            On first run your computer asks whether to allow Pen-pal Pet through
-            the firewall. Say yes, and tick **Private networks only**.
+        run: |
+          set -e
+          zip=$(ls installers/*Windows.zip | head -1)
+          echo "publishing $zip"
+          gh release delete "$GITHUB_REF_NAME" --yes --repo "$GITHUB_REPOSITORY" || true
+          gh release create "$GITHUB_REF_NAME" "$zip" --repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --notes-file docs/RELEASE-NOTES.md
