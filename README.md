@@ -17,47 +17,37 @@ Notes travel straight from one computer to the other over your Wi-Fi. There is
 no server, no account, no sign-up, and nothing to keep running: install the app
 on two computers on the same network and you can send notes.
 
-## Download and install
+## Install  ·  Windows only
 
-### ➜ **[Download for Windows](https://github.com/JnrDevAmi/Pen_Pal_Pet/releases/latest)**
-
-**Windows only.** There is no macOS or Linux build: the app has never been run
-on either, and shipping one would be claiming something nobody has checked.
+### ➜ **[Download](https://github.com/JnrDevAmi/Pen_Pal_Pet/releases/latest)**
 
 1. Download the zip and **unzip it**
 2. Double-click **`Pen-pal-Pet-Setup-2.0.0.exe`**
-3. Windows shows a blue *"Windows protected your PC"* box — click **More info**,
-   then **Run anyway**. That appears because the app has no paid code-signing
-   certificate; it means the publisher is unverified, not that anything is wrong.
-4. **I Agree** → **Next** → choose where to put it → **Install** → **Finish**
+3. Windows says *"Windows protected your PC"* — click **More info** →
+   **Run anyway**. It only means the app isn't code-signed.
+4. **I Agree** → **Next** → pick a folder → **Install** → **Finish**
+5. Type your name and choose a pet
+6. When Windows asks about the firewall, tick **Private networks** and allow it
 
-The app opens. No administrator password, nothing else to install.
+That's it — no administrator password, nothing else to install. Do the same on
+a second computer on the same Wi-Fi and the two find each other by themselves.
 
-On first run, type your name and pick a pet. Windows asks whether to allow
-Pen-pal Pet through the firewall: **say yes, and tick Private networks only.**
-Without it the two computers can't hand notes to each other. Never tick Public —
-the app has no business listening on a café or airport network.
+**Rather not install anything?** `Pen-pal-Pet-2.0.0-portable.exe` runs straight
+from the file and works from a USB stick.
 
-**Prefer not to install anything?** `Pen-pal-Pet-2.0.0-portable.exe` runs
-straight from the file and works from a USB stick. Nothing is installed.
-
-To remove it: **Settings → Apps → Installed apps → Pen-pal Pet → Uninstall**.
-Your notes are kept in case you reinstall; delete `%APPDATA%\Pen-pal Pet` to
-clear those too.
+**To remove it:** Settings → Apps → Pen-pal Pet → Uninstall. Your notes are
+kept in case you reinstall; delete `%APPDATA%\Pen-pal Pet` to clear those too.
 
 ## Using it
 
-1. On first run, type your name and pick a pet. Your friend does the same on
-   their computer.
-2. Use the shortcuts down the left: **Write a note**, **Mailbag**, **Add a pen
-   pal**, **My pet**. You can also click the pet itself, or the tray icon
-   (menu bar on a Mac).
-3. **Write a note**: pick whoever is nearby, doodle something, add a few words,
+1. Use the shortcuts down the left: **Write a note**, **Mailbag**, **Add a pen
+   pal**, **My pet**. Clicking the pet itself works too, as does the tray icon.
+2. **Write a note**: pick whoever is nearby, doodle something, add a few words,
    and hand it to your pet.
-4. Your pet dawdles for a moment, then walks off the edge of the window.
-5. A few seconds later it walks into your friend's window carrying an envelope.
+3. Your pet dawdles for a moment, then walks off the edge of the window.
+4. A few seconds later it walks into your friend's window carrying an envelope.
    They click it, read it, and choose **Write back** or **Just wave back**.
-6. Your pet walks back in with a yellow envelope. Click it to read the reply.
+5. Your pet walks back in with a yellow envelope. Click it to read the reply.
 
 Other things worth knowing:
 
@@ -101,8 +91,7 @@ again fresh.
   captured message can't be replayed or redirected.
 - The app only accepts connections from computers on your own networks, and the
   listener caps connections and times out anything that dawdles.
-- **Your keys are sealed on disk** with your operating system's own keystore
-  (DPAPI on Windows), so copying
+- **Your keys are sealed on disk** with Windows' own encryption, so copying
   `identity.json` to another computer yields nothing usable.
 - Everything is kept in two small files in the app's own folder: `identity.json`
   and `notes.json`.
@@ -146,16 +135,14 @@ npm run dist:portable   # single portable .exe, nothing to install
 npm run dist            # the setup wizard
 ```
 
-The Windows installer is built by `electron-builder`. macOS and Linux targets
-were removed rather than left in untested: the app still carries a tray icon
-and a keystore path for both, so they are plausible, but nobody has built or
-run them. Adding them back means building on those machines and actually
-checking the window appears, the tray behaves, and the keystore works.
+macOS and Linux targets were removed rather than left in untested. Adding them
+back means building on those machines and checking the window, the tray and the
+keystore actually work.
 
 ### Publishing a version
 
-Tag it, and GitHub Actions builds all three platforms, runs the tests, and
-publishes a release with the installers attached:
+Tag it, and GitHub Actions runs the tests, builds the Windows installer, and
+publishes a release with it attached:
 
 ```bash
 git tag v2.0.0
