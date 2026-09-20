@@ -32,9 +32,6 @@ on two computers on the same network and you can send notes.
 That's it — no administrator password, nothing else to install. Do the same on
 a second computer on the same Wi-Fi and the two find each other by themselves.
 
-**Rather not install anything?** `Pen-pal-Pet-2.0.0-portable.exe` runs straight
-from the file and works from a USB stick.
-
 **To remove it:** Settings → Apps → Pen-pal Pet → Uninstall. Your notes are
 kept in case you reinstall; delete `%APPDATA%\Pen-pal Pet` to clear those too.
 
@@ -131,7 +128,6 @@ cd app
 npm install
 npm start               # run it from source
 
-npm run dist:portable   # single portable .exe, nothing to install
 npm run dist            # the setup wizard
 ```
 

@@ -13,7 +13,6 @@
     "dist:win": "electron-builder --win --publish never",
     "test": "node ../test/run-all.js",
     "test:stress": "node ../test/04-stress.js",
-    "dist:portable": "electron-builder --win portable --publish never",
     "test:renderer": "electron ../test/09-renderer.js",
     "test:multiproc": "node ../test/05-multiproc.js 30",
     "peer:a": "electron . --user-data-dir=.peers/a",
@@ -44,12 +43,6 @@
     },
     "win": {
       "target": [
-        {
-          "target": "portable",
-          "arch": [
-            "x64"
-          ]
-        },
         {
           "target": "nsis",
           "arch": [
@@ -82,10 +75,6 @@
       "en-US"
     ],
     "asar": true,
-    "portable": {
-      "artifactName": "Pen-pal-Pet-${version}-portable.${ext}",
-      "unicode": false
-    },
     "afterPack": "build/afterPack.js"
   }
 }

@@ -99,10 +99,8 @@ jobs:
             **Windows only.** Download the zip, unzip it, and run the setup
             wizard inside. Nothing else is needed - no Node, no npm.
 
-            | File | What to do |
-            | --- | --- |
-            | `Pen-pal-Pet-*-Windows.zip` | Unzip and run the setup wizard. No administrator password needed. |
-            | `Pen-pal-Pet-*-portable.exe` | Runs straight from the file. Nothing is installed. |
+            Download `Pen-pal-Pet-*-Windows.zip`, unzip it, and run the setup
+            wizard. No administrator password needed.
 
             It is not code-signed, so Windows shows a blue "Windows protected
             your PC" notice. Click More info, then Run anyway. That means the
