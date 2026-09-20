@@ -70,18 +70,39 @@ jobs:
   # Release, so the installers have permanent public download links.
   release:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
+    # always(): macOS and Linux builds are not yet proven, and one of them
+    # failing must not stop a working Windows installer from being published.
+    if: always() && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           path: installers
           merge-multiple: true
 
-      - name: List what will be published
+      - name: List what the runners produced
         run: ls -lh installers
+
+      # People download a zip, unzip it and run the wizard, so ship the
+      # installer with a plain-language note beside it.
+      - name: Bundle the Windows installer with its instructions
+        run: |
+          setup=$(ls installers/*Setup*.exe 2>/dev/null | head -1) || true
+          if [ -n "$setup" ]; then
+            ver="${GITHUB_REF_NAME#v}"
+            dir="Pen-pal-Pet-$ver-Windows"
+            mkdir -p "$dir"
+            cp "$setup" "$dir/"
+            cp docs/READ-ME-FIRST.txt "$dir/READ ME FIRST.txt"
+            zip -r -q "installers/$dir.zip" "$dir"
+            echo "bundled $dir.zip"
+          else
+            echo "no Windows installer in this run; skipping the zip"
+          fi
 
       - uses: softprops/action-gh-release@v2
         with:
@@ -89,7 +110,8 @@ jobs:
           draft: false
           generate_release_notes: true
           body: |
-            Download the file for your computer and open it. Nothing else is needed.
+            Download the zip for your computer, unzip it, and run the setup
+            wizard inside. Nothing else is needed - no Node, no npm.
 
             | Computer | File | What to do |
             | --- | --- | --- |

@@ -1,0 +1,66 @@
+PEN-PAL PET 2.0.0  -  Windows
+
+A small pet carries short notes and doodles between computers on the same
+Wi-Fi. No account, no server, nothing to sign up for.
+
+
+HOW TO INSTALL
+
+  1. Double-click  Pen-pal-Pet-Setup-2.0.0.exe
+
+  2. Windows shows a blue box: "Windows protected your PC".
+     Click  More info  ->  Run anyway
+     This appears because the app has no paid code-signing certificate.
+     It means the publisher is unverified, not that anything is wrong.
+
+  3. Read the terms, click  I Agree
+
+  4. Choose who it is for, click  Next
+
+  5. Choose where to put it (or keep the suggestion), click  Install
+
+  6. Click  Finish. The app opens.
+
+No administrator password is needed.
+
+
+FIRST RUN
+
+  Type your name and pick a pet.
+
+  Windows asks whether to allow Pen-pal Pet through the firewall.
+  Say YES, and tick PRIVATE NETWORKS ONLY.
+  Without this your friend's computer cannot hand notes to yours.
+  Never tick Public networks - the app has no business listening on a
+  cafe or airport network.
+
+
+USING IT
+
+  Install it on a second computer on the same Wi-Fi and the two find each
+  other by themselves. Write a note, doodle on it, and your pet walks it
+  over. It comes back with the reply.
+
+  To try it alone, choose "Me (test run)" in the To list and watch the
+  whole trip in one window.
+
+
+IS IT SAFE?
+
+  Notes are encrypted between the two computers and every message is
+  signed, so nobody else on the Wi-Fi can read or alter them. Your keys
+  and your notes are sealed on disk using Windows' own encryption.
+
+  Display names are not unique - anyone can call themselves anything.
+  The four words shown beside each friend are what tell a real friend
+  from an imitator. Read them aloud to each other once.
+
+  The app makes no internet connections at all.
+
+
+TO REMOVE IT
+
+  Settings  ->  Apps  ->  Installed apps  ->  Pen-pal Pet  ->  Uninstall
+
+  Your notes are kept in case you reinstall. To clear those too, delete
+  the folder:  %APPDATA%\Pen-pal Pet

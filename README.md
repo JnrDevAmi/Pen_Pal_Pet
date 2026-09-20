@@ -20,35 +20,35 @@ Notes travel straight from one computer to the other over your Wi-Fi. There is
 no server, no account, no sign-up, and nothing to keep running: install the app
 on two computers on the same network and you can send notes.
 
-## Download
+## Download and install
 
-**[Get the latest release](https://github.com/JnrDevAmi/Pen_Pal_Pet/releases/latest)** —
-pick the file for your computer and open it. You do not need Node, npm, or any
-of the build instructions further down; those are only for working on the app
-itself.
+### ➜ **[Download for Windows](https://github.com/JnrDevAmi/Pen_Pal_Pet/releases/latest)**
 
-## Installing
+1. Download the zip and **unzip it**
+2. Double-click **`Pen-pal-Pet-Setup-2.0.0.exe`**
+3. Windows shows a blue *"Windows protected your PC"* box — click **More info**,
+   then **Run anyway**. That appears because the app has no paid code-signing
+   certificate; it means the publisher is unverified, not that anything is wrong.
+4. **I Agree** → **Next** → choose where to put it → **Install** → **Finish**
+
+The app opens. No administrator password, nothing else to install.
+
+On first run, type your name and pick a pet. Windows asks whether to allow
+Pen-pal Pet through the firewall: **say yes, and tick Private networks only.**
+Without it the two computers can't hand notes to each other. Never tick Public —
+the app has no business listening on a café or airport network.
+
+**Other computers**
 
 | Computer | File | What to do |
 | --- | --- | --- |
-| Windows | `Pen-pal-Pet-Setup-2.0.0.exe` | The normal way. Double-click, read the terms, choose where it goes, and it installs with a Start Menu and desktop shortcut. No administrator password needed. |
-| Windows (portable) | `Pen-pal-Pet-2.0.0-portable.exe` | Nothing is installed — it runs straight from the file, and keeps working from a USB stick. |
-| macOS | `Pen-pal-Pet-2.0.0.dmg` | Open it, drag the app to Applications. The first time, right-click the app and choose **Open**, then **Open** again, because it isn't signed by Apple. |
-| Linux | `Pen-pal-Pet-2.0.0.AppImage` | Make it executable (`chmod +x`) and run it. |
+| Windows (portable) | `Pen-pal-Pet-2.0.0-portable.exe` | Nothing installed — runs from the file, works from a USB stick. |
+| macOS | `Pen-pal-Pet-2.0.0.dmg` | Open it, drag the app to Applications. First time, right-click → **Open** → **Open**, because it isn't signed by Apple. |
+| Linux | `Pen-pal-Pet-2.0.0.AppImage` | `chmod +x` it, then run it. |
 
-Windows may show a blue **"Windows protected your PC"** box, because the app
-carries no paid code-signing certificate. Click **More info**, then **Run
-anyway**. The installer walks through four steps: the terms, where to put it,
-copying the files, and finishing.
-
-The first time the app runs, your computer asks whether to allow Pen-pal Pet
-through the firewall. **Say yes, and tick Private networks only.** Without that,
-the two computers can't hand notes to each other. Never tick Public networks —
-the app has no business listening on a café or airport network.
-
-To remove it later: **Settings → Apps → Installed apps → Pen-pal Pet →
-Uninstall**. Your notes are left behind in case you reinstall; delete
-`%APPDATA%\Pen-pal Pet` to clear them too.
+To remove it: **Settings → Apps → Installed apps → Pen-pal Pet → Uninstall**.
+Your notes are kept in case you reinstall; delete `%APPDATA%\Pen-pal Pet` to
+clear those too.
 
 ## Using it
 
@@ -67,7 +67,8 @@ Uninstall**. Your notes are left behind in case you reinstall; delete
 Other things worth knowing:
 
 - **Me (test run)** in the "To" list sends a note to yourself, so you can watch
-  the whole trip without a second computer.
+  the whole trip without a second computer — your pet walks off, comes back as
+  a visitor, and you can reply to yourself.
 - If your friend's computer is asleep, the note **waits in the satchel** and goes
   out by itself as soon as they're back on the Wi-Fi.
 - If they never reply, **Call home** in the Mailbag brings your pet back.
@@ -126,11 +127,14 @@ apart.
   Wi-Fi and larger corporate networks with "client isolation" switched on. On
   those, friends won't appear in the list.
 
-## Building it yourself
+## For developers only
 
-Only needed if you want to change the app. To simply use it, take a file from
-the [releases page](https://github.com/JnrDevAmi/Pen_Pal_Pet/releases/latest)
-instead.
+Everything below is for changing the app. **If you just want to use it, stop
+here** and take the download at the top — you do not need Node, npm, or any of
+this.
+
+<details>
+<summary>Building from source</summary>
 
 ```bash
 cd app
@@ -158,16 +162,14 @@ The tag is what makes a public download link. Running the workflow by hand
 instead puts the files in the run's Artifacts, which is fine for checking a
 build but no use to anyone else: those need a GitHub login and expire.
 
-## Trying it without a second computer
+</details>
 
-Two ways, depending on how much you want to see:
+<details>
+<summary>Testing</summary>
 
-**Send a note to yourself.** Pick **Me (test run)** in the "To" list. Your pet
-walks off, comes back as a visitor, and you can reply to yourself. The whole
-trip, one window.
+### Two peers on one machine
 
-**Run two peers side by side.** Each needs its own identity, which means its own
-data folder. In two terminals:
+Each copy needs its own identity, which means its own data folder:
 
 ```bash
 cd app
@@ -175,13 +177,12 @@ npm run peer:a      # first window
 npm run peer:b      # second window
 ```
 
-They are genuinely separate installs as far as the app is concerned - different
-keys, different IDs, real sockets between them - so they discover each other,
-show each other's safety codes, and hand notes over exactly as two computers
-would. Give each a different name and pet so you can tell them apart. Their data
-lives in `app/.peers/a` and `app/.peers/b`; delete those to start over.
+As far as the app is concerned those are separate installs — different keys,
+different IDs, real sockets between them — so they discover each other, show
+each other's safety codes, and hand notes over exactly as two computers would.
+Their data lives in `app/.peers/a` and `app/.peers/b`.
 
-## Testing
+### The suites
 
 The tests drive real peers over real sockets — real UDP multicast, real HTTP,
 real key exchange. No Electron needed; they run on plain Node.
@@ -208,7 +209,10 @@ npm run test:multiproc      # 30 peers in separate processes
 | `test/09-renderer.js` | The real page: every screen, hostile content, XSS |
 | `test/05-multiproc.js` | Realistic scaling, one peer per process |
 
-## What's inside
+</details>
+
+<details>
+<summary>What's inside</summary>
 
 ```
 app/
@@ -222,3 +226,5 @@ app/
 test/            real-socket tests, from unit to adversarial
 banner.svg       the animated README banner (self-contained, no requests)
 ```
+
+</details>

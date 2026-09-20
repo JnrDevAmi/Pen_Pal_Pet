@@ -27,3 +27,6 @@ desktop.ini
 # logs
 *.log
 npm-debug.log*
+
+# staged release bundles
+dist-zip/
