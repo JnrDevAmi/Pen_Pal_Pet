@@ -1,9 +1,14 @@
 name: Build installers
 
-# Builds Pen-pal Pet for Windows, macOS and Linux. Run it from the Actions tab
-# ("Run workflow"), then download the installers from the run's Artifacts
-# section. The macOS build has to happen here, because a .dmg can only be made
-# on a Mac.
+# Builds Pen-pal Pet for Windows, macOS and Linux.
+#
+#   Tag a version  ->  a public Release appears with the installers attached,
+#                      which is the link you give people.
+#   Run by hand    ->  the installers land in the run's Artifacts, which is
+#                      fine for checking a build but no good for users: those
+#                      need a GitHub login and expire after 90 days.
+#
+# The macOS build has to happen here, because a .dmg can only be made on a Mac.
 
 on:
   workflow_dispatch:
@@ -31,12 +36,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+
       - name: Install dependencies
         working-directory: app
         run: npm install
+
+      # The suites talk over real sockets, so a broken build fails here rather
+      # than reaching somebody's computer.
+      - name: Test
+        working-directory: app
+        run: npm test
+        continue-on-error: false
+
       - name: Build
         working-directory: app
         run: npx electron-builder ${{ matrix.target }} --publish never
+
       - uses: actions/upload-artifact@v4
         with:
           name: penpal-pet-${{ matrix.name }}
@@ -44,4 +59,44 @@ jobs:
             app/dist/*.exe
             app/dist/*.dmg
             app/dist/*.AppImage
-          if-no-files-found: warn
+          if-no-files-found: error
+
+  # Only on a tag: gather what the three runners built and publish it as a
+  # Release, so the installers have permanent public download links.
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: installers
+          merge-multiple: true
+
+      - name: List what will be published
+        run: ls -lh installers
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: installers/*
+          draft: false
+          generate_release_notes: true
+          body: |
+            Download the file for your computer and open it. Nothing else is needed.
+
+            | Computer | File | What to do |
+            | --- | --- | --- |
+            | Windows | `Pen-pal-Pet-Setup-*.exe` | Double-click and follow the wizard. No administrator password needed. |
+            | Windows (portable) | `Pen-pal-Pet-*-portable.exe` | Runs straight from the file. Nothing is installed. |
+            | macOS | `Pen-pal-Pet-*.dmg` | Open it and drag the app to Applications. |
+            | Linux | `Pen-pal-Pet-*.AppImage` | `chmod +x` it, then run it. |
+
+            These are not code-signed, so Windows shows a blue "Windows protected
+            your PC" notice and macOS asks you to right-click and choose Open the
+            first time. That means the publisher is unverified, not that anything
+            is wrong with the file.
+
+            On first run your computer asks whether to allow Pen-pal Pet through
+            the firewall. Say yes, and tick **Private networks only**.

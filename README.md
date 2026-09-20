@@ -20,6 +20,13 @@ Notes travel straight from one computer to the other over your Wi-Fi. There is
 no server, no account, no sign-up, and nothing to keep running: install the app
 on two computers on the same network and you can send notes.
 
+## Download
+
+**[Get the latest release](https://github.com/JnrDevAmi/Pen_Pal_Pet/releases/latest)** —
+pick the file for your computer and open it. You do not need Node, npm, or any
+of the build instructions further down; those are only for working on the app
+itself.
+
 ## Installing
 
 | Computer | File | What to do |
@@ -121,6 +128,10 @@ apart.
 
 ## Building it yourself
 
+Only needed if you want to change the app. To simply use it, take a file from
+the [releases page](https://github.com/JnrDevAmi/Pen_Pal_Pet/releases/latest)
+instead.
+
 ```bash
 cd app
 npm install
@@ -131,10 +142,21 @@ npm run dist            # installers for the computer you're on
 ```
 
 Each installer has to be built on its own kind of computer, except that Windows
-builds also work from Linux if Wine is installed. The included GitHub Actions
-workflow (`.github/workflows/build.yml`) builds all three: push this folder to a
-GitHub repository, open the **Actions** tab, run **Build installers**, and
-download the results from the run's Artifacts section.
+builds also work from Linux if Wine is installed.
+
+### Publishing a version
+
+Tag it, and GitHub Actions builds all three platforms, runs the tests, and
+publishes a release with the installers attached:
+
+```bash
+git tag v2.0.0
+git push origin v2.0.0
+```
+
+The tag is what makes a public download link. Running the workflow by hand
+instead puts the files in the run's Artifacts, which is fine for checking a
+build but no use to anyone else: those need a GitHub login and expire.
 
 ## Trying it without a second computer
 
