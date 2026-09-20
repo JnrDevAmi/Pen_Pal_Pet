@@ -28,6 +28,12 @@ const PEER_TTL = 12000;
 const TRAVEL_MS = 8000;      // how long a pet takes to walk from one desktop to the other
 const RETRY_MS = 4000;
 const MAX_BODY = 500 * 1024;
+// A friend hands over a note now and then. Hundreds in a minute is not a
+// friend, and because the store keeps only the newest notes, a flood from
+// somebody you accepted would quietly push out everything you wanted to keep.
+const NOTE_BURST = 20;          // notes one peer may deliver...
+const NOTE_WINDOW = 60000;      // ...within this long
+const NOTE_PER_PEER = 100;      // and how much of the mailbag one peer may fill
 
 const nowMs = () => Date.now();
 
@@ -91,7 +97,21 @@ class Net extends EventEmitter {
     this.sock = null;
     this.timers = [];
     this.replay = new ReplayGuard();
+    this.noteRate = new Map();  // id -> recent delivery times
     this.impostors = new Map(); // id -> lastWarnedAt, so we warn once not every 3s
+  }
+
+  /**
+   * True while this peer is still delivering notes at a human pace. Keeps the
+   * mailbag from being flooded by somebody whose key you once accepted.
+   */
+  acceptsAnotherNote(id) {
+    const now = nowMs();
+    const recent = (this.noteRate.get(id) || []).filter((t) => now - t < NOTE_WINDOW);
+    if (recent.length >= NOTE_BURST) { this.noteRate.set(id, recent); return false; }
+    recent.push(now);
+    this.noteRate.set(id, recent);
+    return true;
   }
 
   /** The key material we use to talk to a given peer, or null if unusable. */
@@ -237,6 +257,15 @@ class Net extends EventEmitter {
     }
     const existing = this.store.get(id);
     if (existing) return this.reply(res, 200, { ok: true, duplicate: true });
+
+    // Checked after the duplicate test, so an honest retry costs nothing.
+    if (!this.acceptsAnotherNote(peer.id)) {
+      return this.reply(res, 429, { error: "too many notes just now" });
+    }
+    const held = this.store.list().filter((n) => n.dir === "in" && n.peerId === peer.id).length;
+    if (held >= NOTE_PER_PEER) {
+      return this.reply(res, 429, { error: "your notes fill the satchel" });
+    }
     const t = nowMs();
     const note = this.store.cleanNote({
       id, dir: "in", status: "incoming",
@@ -420,7 +449,7 @@ class Net extends EventEmitter {
     const t = nowMs();
     const out = [];
     for (const [id, p] of this.peers) {
-      if (t - p.lastSeen > PEER_TTL) { this.peers.delete(id); this.changed(); continue; }
+      if (t - p.lastSeen > PEER_TTL) { this.peers.delete(id); this.noteRate.delete(id); this.changed(); continue; }
       out.push(p);
     }
     return out;

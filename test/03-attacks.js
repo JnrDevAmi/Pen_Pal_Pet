@@ -128,6 +128,26 @@ function envelope(from, to, path, inner, over = {}) {
   const misres = await rawPost(A.net.port, "/note", JSON.stringify(mis), LAN);
   rec("envelope addressed to a different peer", misres.code >= 400, `HTTP ${misres.code}`);
 
+  // ---- a peer you accepted tries to push your notes out of the mailbag ----
+  // The store keeps only the newest notes, so without a limit a flood from
+  // somebody whose key you once accepted silently destroys what you kept.
+  A.store.put(A.store.cleanNote({
+    id: "n_keepsake", dir: "in", status: "read", peerId: B.id,
+    peerName: "Priya", note: "worth keeping", createdAt: Date.now() - 600000,
+  }));
+  A.store.saveNow();
+  let flooded = 0;
+  for (let i = 0; i < 60; i++) {
+    const r = await B.net.post(peerA, "/note",
+      { noteId: "n_flood_" + i, note: "spam", doodle: [], sentAt: Date.now() });
+    if (r.ok) flooded++;
+  }
+  A.store.saveNow();
+  const { Store: S2 } = require("../app/store.js");
+  const survived = !!new S2(A.dir).get("n_keepsake");
+  rec("note flood from an accepted peer", flooded < 60 && survived,
+    `${flooded}/60 accepted, keepsake ${survived ? "survived" : "DESTROYED"}`);
+
   // ================= v2: THE BIG ONE, retried =================
   console.log("\n  --- identity spoofing (the v1 hole) ---");
   const evilX = crypto.generateKeyPairSync("x25519");

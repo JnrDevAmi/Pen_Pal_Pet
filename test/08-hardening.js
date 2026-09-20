@@ -207,6 +207,19 @@ test("a changed peer key is refused rather than silently accepted", () => {
     "a refused peer must never be written to the peer list");
 });
 
+test("shipped software carries no debugger", () => {
+  assert.match(main, /devTools:\s*false/, "devTools must be off in the built app");
+  assert.match(main, /Menu\.setApplicationMenu\(null\)/,
+    "the default menu carries a Toggle Developer Tools shortcut");
+});
+
+test("one peer cannot flood the mailbag", () => {
+  const net = read("net.js");
+  assert.match(net, /acceptsAnotherNote/, "inbound notes must be rate limited per peer");
+  assert.match(net, /NOTE_PER_PEER/, "one peer must not fill the whole mailbag");
+  assert.match(net, /429/, "a flood should be refused, not stored");
+});
+
 test("the listener cannot be held open or flooded", () => {
   const net = read("net.js");
   assert.match(net, /maxConnections\s*=\s*\d+/, "connection count must be capped");

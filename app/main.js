@@ -42,6 +42,9 @@ function createWindow() {
       sandbox: true,
       backgroundThrottling: false,
       spellcheck: false,
+      // Shipped software has no debugger in it. autoHideMenuBar only hides the
+      // menu - its Toggle Developer Tools accelerator still fires without this.
+      devTools: false,
     },
   });
   win.loadFile(path.join(__dirname, "renderer", "index.html"));
@@ -188,6 +191,9 @@ app.on("web-contents-created", (_e, contents) => {
 
 app.whenReady().then(() => {
   app.setAppUserModelId("com.penpalpet.app");
+  // Removes the default menu outright, and with it the View > Toggle
+  // Developer Tools entry and its keyboard shortcut.
+  Menu.setApplicationMenu(null);
   lockDownSession(session.defaultSession);
 
   // Seal this computer's private keys with the OS keystore (DPAPI on Windows,
